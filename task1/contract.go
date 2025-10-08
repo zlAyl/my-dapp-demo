@@ -2,10 +2,8 @@ package main
 
 import (
 	"context"
-	"crypto/ecdsa"
 	"fmt"
 	"log"
-	"math/big"
 	"os"
 	"path/filepath"
 
@@ -39,36 +37,37 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	publicKey := privateKey.Public()
-	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
-	if !ok {
-		log.Fatal("error converting public key to ECDSA")
-	}
-	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	//publicKey := privateKey.Public()
+	//publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	//if !ok {
+	//	log.Fatal("error converting public key to ECDSA")
+	//}
+	//fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
 
-	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	gasPrice, err := client.SuggestGasPrice(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
+	//nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//gasPrice, err := client.SuggestGasPrice(context.Background())
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
 	chainID, err := client.ChainID(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	//初始化交易opt实例
 	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, chainID)
 	if err != nil {
 		log.Fatal(err)
 	}
-	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = big.NewInt(0)     // in wei
-	auth.GasLimit = uint64(300000) // in units
-	auth.GasPrice = gasPrice
+	//auth.Nonce = big.NewInt(int64(nonce))
+	//auth.Value = big.NewInt(0)     // in wei
+	//auth.GasLimit = uint64(300000) // in units
+	//auth.GasPrice = gasPrice
 
 	//部署合约
 	//address, _, _, err := count.DeployCount(auth, client)
@@ -78,16 +77,17 @@ func main() {
 	//
 	//fmt.Printf("合于地址： %s\n", address.Hex())
 
-	address := common.HexToAddress("0x3263a41DE9b0BC4f915C0609E68cc5449cbC4669")
+	address := common.HexToAddress("0xfdd72bee132897EBF8f29774E644d07DBbB1a0D2")
 
 	//fmt.Printf("Deployed contract： %s\n", tx.Hash().Hex())
 
+	//加载合约
 	countContract, err := count.NewCount(address, client)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	//调用合约
+	//调用合约方法
 	tx, err := countContract.AddCount(auth)
 	if err != nil {
 		log.Fatal(err)
